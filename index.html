@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Subway Galaxy - مترو الأنفاق المجري</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- شاشة التحميل -->
+    <div id="loading-screen">
+        <div class="loader-container">
+            <img src="https://i.ibb.co/6J7X0qR/pikachu-running.gif" alt="بيكاتشو يركض" class="loading-character">
+            <div class="track-container">
+                <div class="track"></div>
+                <div class="train-fill"></div>
+            </div>
+            <p class="loading-tip">💡 قوة النمر تخليك تمرّي من الأماكن الضيقة!</p>
+        </div>
+    </div>
+
+    <!-- شاشة البداية -->
+    <div id="start-screen" class="hidden">
+        <div class="game-title">
+            <h1>🚇 Subway Galaxy</h1>
+            <p>مغامرة بيكاتشو والكائنات الفضائية</p>
+        </div>
+        
+        <div class="character-preview">
+            <img src="https://i.ibb.co/6J7X0qR/pikachu-running.gif" id="preview-character" alt="personality">
+        </div>
+
+        <div class="menu-buttons">
+            <button class="menu-btn play-btn" onclick="startGame()">▶ ابدأ الركض</button>
+            <button class="menu-btn" onclick="showCharacters()">👤 الشخصيات</button>
+            <button class="menu-btn" onclick="showChallenges()">📅 التحديات</button>
+            <button class="menu-btn" onclick="showShop()">🛒 المتجر</button>
+            <button class="menu-btn" onclick="showSettings()">⚙️ الإعدادات</button>
+        </div>
+
+        <div class="hearts-container">
+            <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
+            <span class="hearts-timer">🕒 يتجدد خلال 15 دقيقة</span>
+        </div>
+
+        <div class="coins-display">
+            <span>💰 <span id="total-coins">0</span></span>
+        </div>
+    </div>
+
+    <!-- شاشة اختيار الشخصيات -->
+    <div id="characters-screen" class="screen hidden">
+        <h2>اختر شخصيتك 🎮</h2>
+        <div class="characters-grid" id="characters-grid">
+            <!-- الشخصيات حتتحط هنا عن طريق الجافاسكريبت -->
+        </div>
+        <button class="back-btn" onclick="hideAllScreens()">🔙 رجوع</button>
+    </div>
+
+    <!-- شاشة التحديات -->
+    <div id="challenges-screen" class="screen hidden">
+        <h2>تحديات اليوم 📅</h2>
+        <div id="daily-challenges" class="challenges-container">
+            <!-- التحديات اليومية -->
+        </div>
+        
+        <h2>🏆 تحدي الأسبوع</h2>
+        <div id="weekly-challenge" class="weekly-container">
+            <!-- تحدي الأسبوع -->
+        </div>
+        <button class="back-btn" onclick="hideAllScreens()">🔙 رجوع</button>
+    </div>
+
+    <!-- شاشة المتجر -->
+    <div id="shop-screen" class="screen hidden">
+        <h2>🛒 المتجر</h2>
+        <div class="shop-items">
+            <div class="shop-item">
+                <span>❤️ روح إضافية</span>
+                <span>100 💰</span>
+                <button onclick="buyItem('heart')">شراء</button>
+            </div>
+            <div class="shop-item">
+                <span>⚡ تعزيز القوة (مؤقت)</span>
+                <span>250 💰</span>
+                <button onclick="buyItem('boost')">شراء</button>
+            </div>
+            <div class="shop-item">
+                <span>🎁 صندوق مفاجأة</span>
+                <span>500 💰</span>
+                <button onclick="buyItem('box')">شراء</button>
+            </div>
+        </div>
+        <button class="back-btn" onclick="hideAllScreens()">🔙 رجوع</button>
+    </div>
+
+    <!-- شاشة الإعدادات -->
+    <div id="settings-screen" class="screen hidden">
+        <h2>⚙️ الإعدادات</h2>
+        <div class="setting-item">
+            <span>🔊 الصوت</span>
+            <label class="switch">
+                <input type="checkbox" id="sound-toggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>🎵 الموسيقى</span>
+            <label class="switch">
+                <input type="checkbox" id="music-toggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-item">
+            <span>📱 الاهتزاز</span>
+            <label class="switch">
+                <input type="checkbox" id="vibrate-toggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <button class="back-btn" onclick="hideAllScreens()">🔙 رجوع</button>
+    </div>
+
+    <!-- شاشة اختيار المراحل -->
+    <div id="levels-screen" class="screen hidden">
+        <h2>اختر المرحلة 🚇</h2>
+        <div class="worlds-container">
+            <div class="world world-1">
+                <h3>🌳 العالم الأول: البداية (1-20)</h3>
+                <div class="levels-grid" id="levels-world-1"></div>
+            </div>
+            <div class="world world-2 hidden-world">
+                <h3>🌃 العالم الثاني: الظل (21-40)</h3>
+                <div class="levels-grid" id="levels-world-2"></div>
+            </div>
+            <div class="world world-3 hidden-world">
+                <h3>🌋 العالم الثالث: التحدي (41-60)</h3>
+                <div class="levels-grid" id="levels-world-3"></div>
+            </div>
+        </div>
+        <button class="back-btn" onclick="hideAllScreens()">🔙 رجوع</button>
+    </div>
+
+    <!-- شاشة اللعبة الرئيسية -->
+    <div id="game-screen" class="hidden">
+        <div class="game-header">
+            <div class="hearts-game">
+                <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
+            </div>
+            <div class="score-game">
+                <span>🏆 <span id="game-score">0</span></span>
+            </div>
+            <div class="coins-game">
+                <span>💰 <span id="game-coins">0</span></span>
+            </div>
+        </div>
+
+        <div class="game-area" id="game-area">
+            <div class="background-layer" id="background-layer"></div>
+            <div class="tracks-container" id="tracks-container">
+                <!-- هنا رح تظهر السكة والعقبات -->
+                <div class="character-container" id="character-container">
+                    <img src="https://i.ibb.co/6J7X0qR/pikachu-running.gif" id="game-character" alt="بيكاتشو">
+                </div>
+            </div>
+            
+            <!-- عناصر القوى -->
+            <div class="power-ups">
+                <div class="power-icon power-brain" id="power-brain">
+                    <span>🧠</span>
+                    <div class="power-tooltip">قوى العقل</div>
+                </div>
+                <div class="power-icon power-shadow" id="power-shadow">
+                    <span>🌫️</span>
+                    <div class="power-tooltip">قوى الظل</div>
+                </div>
+                <div class="power-icon power-challenge" id="power-challenge">
+                    <span>⚡</span>
+                    <div class="power-tooltip">قوى التحدي</div>
+                </div>
+            </div>
+
+            <!-- نافذة المعادلات الرياضية -->
+            <div class="math-popup hidden" id="math-popup">
+                <div class="math-content">
+                    <h3>🧠 قوة الذكاء</h3>
+                    <p id="math-question">8 × 7 = ؟</p>
+                    <div class="math-answers">
+                        <button class="math-btn" onclick="checkMathAnswer(45)">45</button>
+                        <button class="math-btn" onclick="checkMathAnswer(56)">56</button>
+                        <button class="math-btn" onclick="checkMathAnswer(63)">63</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة الذاكرة -->
+            <div class="memory-popup hidden" id="memory-popup">
+                <div class="memory-content">
+                    <h3>🧠 قوة الذاكرة</h3>
+                    <p>تذكري الرمز الصح!</p>
+                    <div class="memory-gates">
+                        <div class="gate" onclick="chooseGate(1)">🚪 1</div>
+                        <div class="gate" onclick="chooseGate(2)">🚪 2</div>
+                        <div class="gate" onclick="chooseGate(3)">🚪 3</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة نمط الألوان -->
+            <div class="pattern-popup hidden" id="pattern-popup">
+                <div class="pattern-content">
+                    <h3>🧠 قوة التركيز</h3>
+                    <p>احفظي نمط الألوان!</p>
+                    <div class="pattern-display" id="pattern-display">
+                        <div class="color-box" id="color1"></div>
+                        <div class="color-box" id="color2"></div>
+                        <div class="color-box" id="color3"></div>
+                    </div>
+                    <button class="pattern-btn" onclick="startPatternReplay()">بدأت الحفظ</button>
+                </div>
+            </div>
+
+            <!-- نافذة صح أو خطأ -->
+            <div class="tf-popup hidden" id="tf-popup">
+                <div class="tf-content">
+                    <h3>🧠 قوة القرار السريع</h3>
+                    <p id="tf-question">النار تحرق</p>
+                    <div class="tf-answers">
+                        <button class="tf-btn true-btn" onclick="checkTF(true)">✅ صح</button>
+                        <button class="tf-btn false-btn" onclick="checkTF(false)">❌ خطأ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة قوة الشجاعة -->
+            <div class="courage-popup hidden" id="courage-popup">
+                <div class="courage-content">
+                    <h3>⚡ قوة الشجاعة</h3>
+                    <p>أي طريق تختارين؟</p>
+                    <div class="path-choices">
+                        <div class="path path-left" onclick="choosePath('left')">
+                            <span>🔥 طريق النار</span>
+                        </div>
+                        <div class="path path-right" onclick="choosePath('right')">
+                            <span>✅ طريق آمن</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة قوة التوازن -->
+            <div class="balance-popup hidden" id="balance-popup">
+                <div class="balance-content">
+                    <h3>⚡ قوة التوازن</h3>
+                    <p>امشي على الجسر الضيق!</p>
+                    <div class="balance-bar">
+                        <div class="balance-indicator" id="balance-indicator"></div>
+                    </div>
+                    <p class="balance-tip">⚖️ أميلي الجوال يمين أو يسار</p>
+                </div>
+            </div>
+
+            <!-- نافذة صندوق الحظ -->
+            <div class="luck-popup hidden" id="luck-popup">
+                <div class="luck-content">
+                    <h3>⚡ قوة الحظ</h3>
+                    <p>افتحي الصندوق!</p>
+                    <div class="lucky-box" onclick="openLuckyBox()">
+                        🎁
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة الخسارة -->
+        <div id="game-over-screen" class="game-over hidden">
+            <h2>😵 اللعبة انتهت!</h2>
+            <p>نقاطك: <span id="final-score">0</span></p>
+            <p>العملات: <span id="final-coins">0</span></p>
+            <div class="game-over-buttons">
+                <button class="restart-btn" onclick="restartGame()">🔄 حاول مرة ثانية</button>
+                <button class="menu-btn" onclick="goToMenu()">🏠 القائمة الرئيسية</button>
+            </div>
+        </div>
+
+        <!-- شاشة كسب المرحلة -->
+        <div id="level-win-screen" class="level-win hidden">
+            <h2>🎉 مبروك!</h2>
+            <p>أكملتي المرحلة <span id="completed-level">1</span></p>
+            <p>+<span id="level-reward">100</span> نقطة</p>
+            <button class="next-level-btn" onclick="nextLevel()">المرحلة التالية ➡️</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
